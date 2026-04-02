@@ -3,166 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SynkData Admin | Enterprise</title>
+    <title>SynkData | Enterprise Access</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #2563eb; --success: #10b981; --warning: #f59e0b; --dark: #0f172a; --bg: #f8fafc; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: #1e293b; margin: 0; display: flex; }
+        :root { --primary: #2563eb; --dark: #0f172a; --bg: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; overflow-x: hidden; }
         .hidden { display: none !important; }
         
-        /* Sidebar */
-        .sidebar { width: 240px; height: 100vh; background: var(--dark); color: white; position: fixed; padding: 1.5rem; }
-        .nav-item { padding: 12px; border-radius: 8px; cursor: pointer; margin-bottom: 5px; color: #94a3b8; transition: 0.3s; }
-        .nav-item:hover, .nav-item.active { background: #1e293b; color: white; }
+        /* PANTALLA DE LOGIN */
+        #login-page { 
+            height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; 
+            background: radial-gradient(circle at top right, #1e293b, #0f172a); 
+            position: fixed; z-index: 9999; top: 0; left: 0;
+        }
+        .login-card { 
+            background: white; padding: 2.5rem; border-radius: 16px; width: 100%; max-width: 380px; 
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: center;
+        }
+        .login-card h2 { margin-bottom: 0.5rem; color: var(--dark); }
+        .login-card input { 
+            width: 100%; padding: 12px; margin-top: 1rem; border: 1px solid #e2e8f0; 
+            border-radius: 8px; box-sizing: border-box; outline: none;
+        }
+        .btn-login { 
+            width: 100%; padding: 12px; background: var(--primary); color: white; 
+            border: none; border-radius: 8px; margin-top: 1.5rem; font-weight: 600; cursor: pointer;
+        }
 
-        /* Main Content */
-        .main-content { margin-left: 270px; padding: 2rem; width: calc(100% - 270px); }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        /* LAYOUT DASHBOARD */
+        #main-dashboard { display: flex; min-height: 100vh; }
+        .sidebar { width: 240px; background: var(--dark); color: white; padding: 1.5rem; position: fixed; height: 100vh; }
+        .main-content { margin-left: 270px; padding: 2rem; width: 100%; }
         
-        /* Cards */
+        /* ESTILOS DE TABLAS Y CARDS */
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
         .card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .card h3 { margin: 0; font-size: 0.85rem; color: #64748b; }
-        .val { font-size: 1.8rem; font-weight: 600; margin-top: 0.5rem; display: block; }
-
-        /* Tables */
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; border-radius: 8px; overflow: hidden; }
-        th { text-align: left; padding: 12px; background: #f1f5f9; color: #64748b; font-size: 0.8rem; }
+        .nav-item { padding: 12px; border-radius: 8px; cursor: pointer; color: #94a3b8; margin-bottom: 5px; }
+        .nav-item.active { background: #1e293b; color: white; border-left: 4px solid var(--primary); }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; }
+        th { text-align: left; padding: 12px; background: #f1f5f9; font-size: 0.8rem; color: #64748b; }
         td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
-        .bg-green { background: #dcfce7; color: #166534; }
-        
-        /* Modal-like sections */
-        .section-title { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; }
-        .btn-add { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; background: #dcfce7; color: #166534; }
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <h2 style="color: #3b82f6;">SynkData OSINT</h2>
-        <nav style="margin-top: 2.5rem;">
-            <div class="nav-item active" onclick="showTab('dashboard')">🏠 Dashboard</div>
-            <div class="nav-item" onclick="showTab('usuarios')">👥 Gestión de Usuarios</div>
-            <div class="nav-item" onclick="showTab('consultas')">🔎 Consultas API</div>
-            <div style="margin-top: 20rem; border-top: 1px solid #334155; padding-top: 1rem;">
-                <div class="nav-item" onclick="location.reload()">🔒 Salir</div>
-            </div>
-        </nav>
+    <div id="login-page">
+        <div class="login-card">
+            <div style="background: #3b82f6; width: 50px; height: 50px; border-radius: 10px; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">S</div>
+            <h2>SynkData Cloud</h2>
+            <p style="color: #64748b; font-size: 0.9rem;">Portal de Consultas Masivas v2.0</p>
+            <input type="text" id="user" placeholder="Usuario Corporativo">
+            <input type="password" id="pass" placeholder="Contraseña">
+            <button class="btn-login" onclick="validateAccess()">Ingresar al Sistema</button>
+            <p style="font-size: 0.7rem; color: #94a3b8; margin-top: 1rem;">© 2026 SynkData - Acceso Restringido</p>
+        </div>
     </div>
 
-    <div class="main-content">
-        
-        <div id="tab-dashboard">
-            <div class="header">
-                <h1>Métricas Generales</h1>
-                <span id="fecha-actual" style="color: #64748b;"></span>
-            </div>
-
-            <div class="grid-3">
-                <div class="card" style="border-top: 4px solid var(--primary);">
-                    <h3>Bolsa de Créditos Global</h3>
-                    <span class="val" id="global-credits">10,000</span>
-                    <small style="color: #10b981;">↑ 12% vs mes anterior</small>
-                </div>
-                <div class="card" style="border-top: 4px solid var(--success);">
-                    <h3>Usuarios Activos</h3>
-                    <span class="val">12</span>
-                    <small>En 4 departamentos</small>
-                </div>
-                <div class="card" style="border-top: 4px solid var(--warning);">
-                    <h3>Costo Operativo Est.</h3>
-                    <span class="val">$15,400.00</span>
-                    <small style="color: #ef4444;">Próximo pago: 05/Abril</small>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3>Consumo por Departamento (Nufi Enrichment)</h3>
-                <canvas id="myChart" height="100"></canvas>
+    <div id="main-dashboard" class="hidden">
+        <div class="sidebar">
+            <h2 style="color: #3b82f6; margin-bottom: 2rem;">SynkData</h2>
+            <div class="nav-item active" onclick="switchTab('dashboard')">🏠 Resumen General</div>
+            <div class="nav-item" onclick="switchTab('users')">👥 Gestión de Usuarios</div>
+            <div class="nav-item" onclick="switchTab('queries')">🔎 Nueva Consulta</div>
+            <div style="margin-top: 25rem; border-top: 1px solid #334155; padding-top: 1rem;">
+                <div class="nav-item" onclick="location.reload()">🔒 Cerrar Sesión</div>
             </div>
         </div>
 
-        <div id="tab-usuarios" class="hidden">
-            <div class="section-title">
-                <h1>Gestión de Usuarios</h1>
-                <button class="btn-add" onclick="alert('Función disponible en versión Pro (Railway Backend)')">+ Crear Usuario</button>
+        <div class="main-content">
+            <div id="tab-dashboard">
+                <h1>Métricas de Consumo</h1>
+                <div class="grid-3">
+                    <div class="card">
+                        <small>CRÉDITOS GLOBALES</small>
+                        <div style="font-size: 2rem; font-weight: 600; color: #2563eb;">10,000</div>
+                    </div>
+                    <div class="card">
+                        <small>COSTO OPERATIVO API</small>
+                        <div style="font-size: 2rem; font-weight: 600; color: #1e293b;">$15,400.00</div>
+                    </div>
+                    <div class="card">
+                        <small>TIEMPO DE RESPUESTA</small>
+                        <div style="font-size: 2rem; font-weight: 600; color: #10b981;">1.2s</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Tráfico por Departamento</h3>
+                    <canvas id="chartDemo" height="100"></canvas>
+                </div>
             </div>
-            
-            <div class="card" style="margin-top: 1rem;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Email</th>
-                            <th>Rol</th>
-                            <th>Créditos Asignados</th>
-                            <th>Consumo Real</th>
-                            <th>Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody id="user-list">
-                        <tr>
-                            <td>Operador_Oaxaca_1</td>
-                            <td>op1@cliente.com</td>
-                            <td>Analista</td>
-                            <td>500</td>
-                            <td>245</td>
-                            <td><span class="badge bg-green">Activo</span></td>
-                        </tr>
-                        <tr>
-                            <td>Gerente_RRHH</td>
-                            <td>rh@cliente.com</td>
-                            <td>Admin</td>
-                            <td>2000</td>
-                            <td>890</td>
-                            <td><span class="badge bg-green">Activo</span></td>
-                        </tr>
-                        <tr>
-                            <td>Auditor_Demo</td>
-                            <td>test@demo.com</td>
-                            <td>Invitado</td>
-                            <td>50</td>
-                            <td>48</td>
-                            <td><span class="badge" style="background:#fee2e2; color:#991b1b">Límite Alcanzado</span></td>
-                        </tr>
-                    </tbody>
-                </table>
+
+            <div id="tab-users" class="hidden">
+                <h1>Usuarios de la Organización</h1>
+                <div class="card">
+                    <table>
+                        <thead>
+                            <tr><th>Nombre</th><th>Rol</th><th>Consumo</th><th>Créditos</th><th>Estado</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Analista_Ventas_1</td><td>Operador</td><td>450</td><td>1000</td><td><span class="badge">Activo</span></td></tr>
+                            <tr><td>Gerencia_Oaxaca</td><td>Admin</td><td>120</td><td>5000</td><td><span class="badge">Activo</span></td></tr>
+                            <tr><td>Auditoria_Externa</td><td>Invitado</td><td>48</td><td>50</td><td><span class="badge" style="background:#fee2e2; color:#991b1b">Límite</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-
     </div>
 
     <script>
-        document.getElementById('fecha-actual').innerText = new Date().toLocaleDateString();
+        // LÓGICA DE ACCESO
+        function validateAccess() {
+            const u = document.getElementById('user').value;
+            const p = document.getElementById('pass').value;
 
-        function showTab(tabName) {
+            // Claves de demo
+            if(u === "admin" && p === "synk2026") {
+                document.getElementById('login-page').classList.add('hidden');
+                document.getElementById('main-dashboard').classList.remove('hidden');
+                initChart();
+            } else {
+                alert("Credenciales incorrectas. Verifica tus datos.");
+            }
+        }
+
+        // CAMBIO DE PESTAÑAS
+        function switchTab(name) {
             document.getElementById('tab-dashboard').classList.add('hidden');
-            document.getElementById('tab-usuarios').classList.add('hidden');
+            document.getElementById('tab-users').classList.add('hidden');
+            document.getElementById('tab-' + name).classList.remove('hidden');
             
-            document.getElementById('tab-' + tabName).classList.remove('hidden');
-            
-            // Update active nav
-            const items = document.querySelectorAll('.nav-item');
-            items.forEach(i => i.classList.remove('active'));
+            const navs = document.querySelectorAll('.nav-item');
+            navs.forEach(n => n.classList.remove('active'));
             event.currentTarget.classList.add('active');
         }
 
-        // Gráfica de simulación
-        const ctx = document.getElementById('myChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['RRHH', 'Finanzas', 'Auditoría', 'Sistemas'],
-                datasets: [{
-                    label: 'Consultas Realizadas',
-                    data: [450, 210, 890, 120],
-                    backgroundColor: '#3b82f6'
-                }]
-            },
-            options: { responsive: true, scales: { y: { beginAtZero: true } } }
-        });
+        // GRÁFICA
+        function initChart() {
+            const ctx = document.getElementById('chartDemo').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Enero', 'Febrero', 'Marzo', 'Abril (Actual)'],
+                    datasets: [{
+                        label: 'Consultas Realizadas (Nufi)',
+                        data: [1200, 1900, 3000, 850],
+                        backgroundColor: '#3b82f6'
+                    }]
+                }
+            });
+        }
     </script>
 </body>
 </html>
