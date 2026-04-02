@@ -3,217 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel — SynkData™</title>
+    <title>SynkData | Panel de Consultas v1.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600&display=swap');
-        :root {
-            --bg: #0f1117; --surface: #171b26; --surface2: #1e2333;
-            --border: rgba(255,255,255,0.07); --text: #e8eaf0; 
-            --muted: #7a8099; --accent: #4f8ef7; --accent2: #38c9a0;
-            --danger: #f05a5a; --warn: #f0b84a; --sans: 'Sora', sans-serif;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: var(--sans); background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
-
-        /* Sidebar Fija */
-        .sidebar { width: 260px; background: var(--surface); border-right: 1px solid var(--border); padding: 32px 0; display: flex; flex-direction: column; position: fixed; height: 100vh; }
-        .nav-item { padding: 14px 28px; color: var(--muted); cursor: pointer; font-size: 14px; transition: 0.3s; border-left: 3px solid transparent; }
-        .nav-item:hover { background: rgba(255,255,255,0.03); color: var(--text); }
-        .nav-item.active { color: var(--accent); background: rgba(79,142,247,0.08); border-left-color: var(--accent); }
-
-        /* Contenido Principal */
-        .main { margin-left: 260px; flex: 1; padding: 40px; }
-        .page { display: none; }
-        .page.active { display: block; }
-
-        /* Componentes de Tabla */
-        .card { background: var(--surface); border-radius: 12px; border: 1px solid var(--border); margin-top: 24px; overflow: hidden; }
-        .card-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 16px 20px; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
-        td { padding: 16px 20px; font-size: 13px; border-bottom: 1px solid var(--border); }
-        tr:hover { background: rgba(255,255,255,0.02); }
-
-        /* Badges de Estado */
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-        .bg-success { background: rgba(56,201,160,0.15); color: var(--accent2); }
-        .bg-error { background: rgba(240,90,90,0.15); color: var(--danger); }
-        .bg-warn { background: rgba(240,184,74,0.15); color: var(--warn); }
-
-        /* Inputs y Botones */
-        input { background: var(--bg); border: 1px solid var(--border); color: #fff; padding: 8px 12px; border-radius: 6px; outline: none; }
-        .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); cursor: pointer; }
-        .btn-sm:hover { background: var(--accent); color: white; }
-
-        /* Modal */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; z-index: 100; }
-        .modal-content { background: var(--surface); padding: 32px; border-radius: 16px; width: 400px; border: 1px solid var(--border); }
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 450px; text-align: center; }
+        h1 { color: #1a202c; margin-bottom: 0.5rem; font-size: 1.5rem; }
+        p { color: #718096; margin-bottom: 1.5rem; font-size: 0.9rem; }
+        input { width: 100%; padding: 12px; margin-bottom: 1rem; border: 1px solid #e2e8f0; border-radius: 6px; box-sizing: border-box; outline: none; }
+        input:focus { border-color: #3182ce; }
+        button { width: 100%; padding: 12px; background: #3182ce; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        button:hover { background: #2b6cb0; }
+        .hidden { display: none; }
+        #results-box { margin-top: 1.5rem; text-align: left; background: #edf2f7; padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.85rem; color: #2d3748; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #3182ce; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; margin-right: 10px; vertical-align: middle; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar">
-        <div style="padding:0 28px 40px; font-weight: 700; font-size: 18px; color: var(--accent);">SynkData <span style="font-weight: 300; color:#fff;">Admin</span></div>
-        <div class="nav-item active" onclick="showPage('usuarios', this)">Gestión de Usuarios</div>
-        <div class="nav-item" onclick="showPage('consultas', this)">Historial Global</div>
-        <div class="nav-item" onclick="showPage('ajustes', this)">Configuración API</div>
-    </aside>
+    <div id="login-section" class="card">
+        <h1>SynkData Cloud</h1>
+        <p>Ingresa tus credenciales para acceder al panel de semanas cotizadas.</p>
+        <input type="text" id="user" placeholder="Usuario de cliente">
+        <input type="password" id="pass" placeholder="Contraseña">
+        <button onclick="handleLogin()">Iniciar Sesión</button>
+        <div style="margin-top: 1rem; font-size: 0.7rem; color: #cbd5e0;">Acceso restringido por IP</div>
+    </div>
 
-    <main class="main">
+    <div id="dashboard-section" class="card hidden">
+        <h1>Panel de Consultas</h1>
+        <p>Módulo de Semanas Cotizadas (NSS / CURP)</p>
+        <input type="text" id="query-input" placeholder="Ej: 01128456789">
+        <button id="btn-query" onclick="simulateQuery()">Consultar Datos</button>
         
-        <section id="page-usuarios" class="page active">
-            <header style="display:flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <h1>Usuarios y Cuotas</h1>
-                    <p style="color: var(--muted); font-size: 14px;">Control de acceso y límites de consumo</p>
-                </div>
-                <button class="btn-sm" style="background:var(--accent); border:none; color:white; padding:10px 20px;">+ Crear Usuario</button>
-            </header>
-
-            <div class="card">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Usuario</th>
-                            <th>Rol</th>
-                            <th>Consultas Mes</th>
-                            <th>Cuota Límite</th>
-                            <th>Estado</th>
-                            <th>Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="user-table-body">
-                        </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="page-consultas" class="page">
-            <h1>Historial de Tráfico</h1>
-            <div class="card">
-                <div class="card-header">
-                    <input type="text" id="searchHistory" placeholder="Filtrar por CURP..." onkeyup="filterHistory()" style="width: 300px;">
-                    <div style="font-size: 12px; color: var(--muted);">Total: 48 solicitudes hoy</div>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Usuario</th>
-                            <th>CURP</th>
-                            <th>API Status</th>
-                            <th>Tiempo</th>
-                            <th>Fecha</th>
-                        </tr>
-                    </thead>
-                    <tbody id="history-table-body">
-                        </tbody>
-                </table>
-            </div>
-        </section>
-
-    </main>
-
-    <div class="modal" id="quotaModal">
-        <div class="modal-content">
-            <h3 id="modalTitle">Editar Cuota</h3>
-            <div style="margin-top: 20px;">
-                <label style="font-size: 12px; color: var(--muted);">NUEVO LÍMITE MENSUAL</label><br>
-                <input type="number" id="newQuotaInput" style="width: 100%; margin-top: 8px; padding: 12px;">
-            </div>
-            <div style="margin-top: 24px; display: flex; gap: 10px; justify-content: flex-end;">
-                <button class="btn-sm" onclick="closeModal()">Cancelar</button>
-                <button class="btn-sm" style="background: var(--accent); color: white; border: none;" onclick="saveQuota()">Guardar Cambios</button>
-            </div>
+        <div id="loading" class="hidden" style="margin-top: 1rem;">
+            <div class="loader"></div> <span style="font-size: 0.9rem; color: #4a5568;">Conectando con API Nufi...</span>
         </div>
+
+        <div id="results-box" class="hidden">
+            <strong>JSON Response:</strong>
+            <pre id="json-output"></pre>
+        </div>
+        
+        <button onclick="location.reload()" style="background: transparent; color: #a0aec0; margin-top: 1rem; font-size: 0.8rem;">Cerrar Sesión</button>
     </div>
 
     <script>
-        // DATOS DE PRUEBA
-        let users = [
-            { name: 'operador_oax', role: 'User', used: 45, limit: 100, active: true },
-            { name: 'ventas_mex', role: 'User', used: 128, limit: 150, active: true },
-            { name: 'admin_central', role: 'Admin', used: 12, limit: 9999, active: true }
-        ];
+        function handleLogin() {
+            const user = document.getElementById('user').value;
+            const pass = document.getElementById('pass').value;
 
-        const history = [
-            { id: 'REQ-992', user: 'operador_oax', curp: 'ROHR900312HDF...', status: 'Success', time: '1.2s', date: 'Hace 5 min' },
-            { id: 'REQ-991', user: 'ventas_mex', curp: 'GACJ850101MDF...', status: 'Failed', time: '0.8s', date: 'Hace 12 min' },
-            { id: 'REQ-990', user: 'operador_oax', curp: 'MCRL920505HDF...', status: 'Success', time: '1.5s', date: 'Hace 20 min' }
-        ];
-
-        let selectedUserIndex = null;
-
-        // RENDERIZAR TABLAS
-        function renderUsers() {
-            const body = document.getElementById('user-table-body');
-            body.innerHTML = users.map((u, i) => `
-                <tr>
-                    <td><b style="color:var(--accent2)">@</b> ${u.name}</td>
-                    <td>${u.role}</td>
-                    <td>${u.used}</td>
-                    <td>${u.limit === 9999 ? '∞' : u.limit}</td>
-                    <td><span class="badge ${u.active ? 'bg-success' : 'bg-error'}">${u.active ? 'Activo' : 'Suspendido'}</span></td>
-                    <td><button class="btn-sm" onclick="openQuotaModal(${i})">Editar Cuota</button></td>
-                </tr>
-            `).join('');
+            // Credenciales para que ellos prueben (puedes cambiarlas)
+            if(user === "admin" && pass === "synk2026") {
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('dashboard-section').classList.remove('hidden');
+            } else {
+                alert("Credenciales inválidas para este demo.");
+            }
         }
 
-        function renderHistory() {
-            const body = document.getElementById('history-table-body');
-            body.innerHTML = history.map(h => `
-                <tr>
-                    <td style="font-family:'DM Mono'">${h.id}</td>
-                    <td>${h.user}</td>
-                    <td style="font-family:'DM Mono'">${h.curp}</td>
-                    <td><span class="badge ${h.status === 'Success' ? 'bg-success' : 'bg-error'}">${h.status}</span></td>
-                    <td>${h.time}</td>
-                    <td style="color:var(--muted)">${h.date}</td>
-                </tr>
-            `).join('');
-        }
+        function simulateQuery() {
+            const val = document.getElementById('query-input').value;
+            if(!val) return alert("Por favor ingresa un NSS o CURP");
 
-        // LOGICA DE PAGINACIÓN (SPA)
-        function showPage(pageId, navEl) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('page-' + pageId).classList.add('active');
-            navEl.classList.add('active');
-        }
+            const btn = document.getElementById('btn-query');
+            const loader = document.getElementById('loading');
+            const results = document.getElementById('results-box');
+            const output = document.getElementById('json-output');
 
-        // LOGICA DE MODAL Y CUOTAS
-        function openQuotaModal(index) {
-            selectedUserIndex = index;
-            document.getElementById('modalTitle').innerText = 'Cuota de ' + users[index].name;
-            document.getElementById('newQuotaInput').value = users[index].limit;
-            document.getElementById('quotaModal').style.display = 'flex';
-        }
+            btn.disabled = true;
+            loader.classList.remove('hidden');
+            results.classList.add('hidden');
 
-        function closeModal() {
-            document.getElementById('quotaModal').style.display = 'none';
-        }
+            // Simulamos el delay de la API real de Nufi
+            setTimeout(() => {
+                btn.disabled = false;
+                loader.classList.add('hidden');
+                results.classList.remove('hidden');
 
-        function saveQuota() {
-            const val = document.getElementById('newQuotaInput').value;
-            users[selectedUserIndex].limit = parseInt(val);
-            renderUsers();
-            closeModal();
-        }
+                const fakeData = {
+                    status: "success",
+                    data: {
+                        nss: val,
+                        semanas_cotizadas: Math.floor(Math.random() * (1200 - 500 + 1)) + 500,
+                        ultimo_patron: "EMPRESA DE LOGISTICA S.A. DE C.V.",
+                        vigencia: "VIGENTE",
+                        timestamp: new Date().toLocaleString()
+                    },
+                    source: "Nufi-Enrichment-API"
+                };
 
-        // BUSCADOR EN TIEMPO REAL
-        function filterHistory() {
-            const val = document.getElementById('searchHistory').value.toUpperCase();
-            const rows = document.querySelectorAll('#history-table-body tr');
-            rows.forEach(row => {
-                const curpCell = row.cells[2].innerText;
-                row.style.display = curpCell.includes(val) ? '' : 'none';
-            });
+                output.textContent = JSON.stringify(fakeData, null, 2);
+            }, 2500);
         }
-
-        // INIT
-        renderUsers();
-        renderHistory();
     </script>
 </body>
 </html>
