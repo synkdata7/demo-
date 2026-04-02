@@ -3,161 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SynkData | Cloud Dashboard</title>
+    <title>SynkData Admin | Enterprise</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #2563eb; --success: #10b981; --bg: #f8fafc; --text: #1e293b; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; }
+        :root { --primary: #2563eb; --success: #10b981; --warning: #f59e0b; --dark: #0f172a; --bg: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: #1e293b; margin: 0; display: flex; }
         .hidden { display: none !important; }
         
-        /* Login Glassmorphism */
-        #login-page { height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
-        .login-card { background: white; padding: 2.5rem; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); }
-        
-        /* Main Layout */
-        .sidebar { width: 260px; height: 100vh; background: #0f172a; color: white; position: fixed; padding: 1.5rem; }
-        .main-content { margin-left: 280px; padding: 2rem; }
+        /* Sidebar */
+        .sidebar { width: 240px; height: 100vh; background: var(--dark); color: white; position: fixed; padding: 1.5rem; }
+        .nav-item { padding: 12px; border-radius: 8px; cursor: pointer; margin-bottom: 5px; color: #94a3b8; transition: 0.3s; }
+        .nav-item:hover, .nav-item.active { background: #1e293b; color: white; }
+
+        /* Main Content */
+        .main-content { margin-left: 270px; padding: 2rem; width: calc(100% - 270px); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
         
         /* Cards */
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
-        .stat-card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid var(--primary); }
-        .stat-card h3 { margin: 0; font-size: 0.8rem; color: #64748b; text-transform: uppercase; }
-        .stat-card p { margin: 0.5rem 0 0; font-size: 1.5rem; font-weight: 600; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+        .card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .card h3 { margin: 0; font-size: 0.85rem; color: #64748b; }
+        .val { font-size: 1.8rem; font-weight: 600; margin-top: 0.5rem; display: block; }
 
         /* Tables */
-        .table-container { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-        th { text-align: left; padding: 0.75rem; border-bottom: 1px solid #e2e8f0; color: #64748b; font-size: 0.85rem; }
-        td { padding: 0.75rem; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
-        .badge { padding: 4px 8px; border-radius: 99px; font-size: 0.75rem; font-weight: 600; }
-        .badge-success { background: #dcfce7; color: #166534; }
-
-        /* Inputs */
-        .search-box { display: flex; gap: 10px; margin-bottom: 2rem; background: white; padding: 1rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        input { padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; flex-grow: 1; outline: none; }
-        button { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; border-radius: 8px; overflow: hidden; }
+        th { text-align: left; padding: 12px; background: #f1f5f9; color: #64748b; font-size: 0.8rem; }
+        td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+        .bg-green { background: #dcfce7; color: #166534; }
+        
+        /* Modal-like sections */
+        .section-title { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; }
+        .btn-add { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div id="login-page">
-        <div class="login-card">
-            <h2 style="margin-top:0">SynkData Cloud</h2>
-            <p>Portal de Consultas Masivas</p>
-            <input type="text" id="user" placeholder="Usuario de Cliente">
-            <input type="password" id="pass" placeholder="Contraseña">
-            <button style="width:100%" onclick="login()">Acceder al Dashboard</button>
-        </div>
+    <div class="sidebar">
+        <h2 style="color: #3b82f6;">SynkData OSINT</h2>
+        <nav style="margin-top: 2.5rem;">
+            <div class="nav-item active" onclick="showTab('dashboard')">🏠 Dashboard</div>
+            <div class="nav-item" onclick="showTab('usuarios')">👥 Gestión de Usuarios</div>
+            <div class="nav-item" onclick="showTab('consultas')">🔎 Consultas API</div>
+            <div style="margin-top: 20rem; border-top: 1px solid #334155; padding-top: 1rem;">
+                <div class="nav-item" onclick="location.reload()">🔒 Salir</div>
+            </div>
+        </nav>
     </div>
 
-    <div id="dashboard-page" class="hidden">
-        <div class="sidebar">
-            <h2>SynkData</h2>
-            <nav style="margin-top: 2rem;">
-                <p style="color: #64748b; font-size: 0.8rem;">MENU</p>
-                <div style="padding: 10px 0; color: #3b82f6; cursor: pointer;">📊 Dashboard</div>
-                <div style="padding: 10px 0; color: #94a3b8; cursor: pointer;">🔍 Consultas</div>
-                <div style="padding: 10px 0; color: #94a3b8; cursor: pointer;">📑 Reportes</div>
-                <div style="padding: 10px 0; color: #94a3b8; cursor: pointer; margin-top: 20rem;" onclick="location.reload()">🚪 Cerrar Sesión</div>
-            </nav>
+    <div class="main-content">
+        
+        <div id="tab-dashboard">
+            <div class="header">
+                <h1>Métricas Generales</h1>
+                <span id="fecha-actual" style="color: #64748b;"></span>
+            </div>
+
+            <div class="grid-3">
+                <div class="card" style="border-top: 4px solid var(--primary);">
+                    <h3>Bolsa de Créditos Global</h3>
+                    <span class="val" id="global-credits">10,000</span>
+                    <small style="color: #10b981;">↑ 12% vs mes anterior</small>
+                </div>
+                <div class="card" style="border-top: 4px solid var(--success);">
+                    <h3>Usuarios Activos</h3>
+                    <span class="val">12</span>
+                    <small>En 4 departamentos</small>
+                </div>
+                <div class="card" style="border-top: 4px solid var(--warning);">
+                    <h3>Costo Operativo Est.</h3>
+                    <span class="val">$15,400.00</span>
+                    <small style="color: #ef4444;">Próximo pago: 05/Abril</small>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Consumo por Departamento (Nufi Enrichment)</h3>
+                <canvas id="myChart" height="100"></canvas>
+            </div>
         </div>
 
-        <div class="main-content">
-            <h1>Panel de Control</h1>
+        <div id="tab-usuarios" class="hidden">
+            <div class="section-title">
+                <h1>Gestión de Usuarios</h1>
+                <button class="btn-add" onclick="alert('Función disponible en versión Pro (Railway Backend)')">+ Crear Usuario</button>
+            </div>
             
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>Créditos Disponibles</h3>
-                    <p id="creditos">1,000</p>
-                </div>
-                <div class="stat-card" style="border-left-color: var(--success);">
-                    <h3>Consultas Exitosas</h3>
-                    <p>842</p>
-                </div>
-                <div class="stat-card" style="border-left-color: #f59e0b;">
-                    <h3>Tiempo Promedio API</h3>
-                    <p>1.8s</p>
-                </div>
-            </div>
-
-            <div class="search-box">
-                <input type="text" id="query-val" placeholder="Ingresa NSS o CURP para consulta en tiempo real...">
-                <button onclick="ejecutarConsulta()">Ejecutar Query</button>
-            </div>
-
-            <div class="table-container">
-                <h3>Últimas Consultas (Nufi Interface)</h3>
+            <div class="card" style="margin-top: 1rem;">
                 <table>
                     <thead>
                         <tr>
-                            <th>Identificador</th>
-                            <th>Semanas</th>
-                            <th>Estatus IMSS</th>
-                            <th>Fecha</th>
-                            <th>Resultado</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Créditos Asignados</th>
+                            <th>Consumo Real</th>
+                            <th>Estado</th>
                         </tr>
                     </thead>
-                    <tbody id="historial">
+                    <tbody id="user-list">
                         <tr>
-                            <td>011284XXXXX</td>
-                            <td>952</td>
-                            <td><span class="badge badge-success">Vigente</span></td>
-                            <td>02/04/2026</td>
-                            <td>Completado</td>
+                            <td>Operador_Oaxaca_1</td>
+                            <td>op1@cliente.com</td>
+                            <td>Analista</td>
+                            <td>500</td>
+                            <td>245</td>
+                            <td><span class="badge bg-green">Activo</span></td>
+                        </tr>
+                        <tr>
+                            <td>Gerente_RRHH</td>
+                            <td>rh@cliente.com</td>
+                            <td>Admin</td>
+                            <td>2000</td>
+                            <td>890</td>
+                            <td><span class="badge bg-green">Activo</span></td>
+                        </tr>
+                        <tr>
+                            <td>Auditor_Demo</td>
+                            <td>test@demo.com</td>
+                            <td>Invitado</td>
+                            <td>50</td>
+                            <td>48</td>
+                            <td><span class="badge" style="background:#fee2e2; color:#991b1b">Límite Alcanzado</span></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
+
     </div>
 
     <script>
-        let creditosRestantes = 1000;
+        document.getElementById('fecha-actual').innerText = new Date().toLocaleDateString();
 
-        function login() {
-            const u = document.getElementById('user').value;
-            const p = document.getElementById('pass').value;
-            if(u === "admin" && p === "synk2026") {
-                document.getElementById('login-page').classList.add('hidden');
-                document.getElementById('dashboard-page').classList.remove('hidden');
-            } else {
-                alert("Acceso denegado");
-            }
-        }
-
-        function ejecutarConsulta() {
-            const val = document.getElementById('query-val').value;
-            if(!val) return alert("Ingresa un dato");
-
-            // Simulación de costo y respuesta
-            if(creditosRestantes <= 0) return alert("Créditos insuficientes. Contacta a SynkData para recarga.");
-
-            const tbody = document.getElementById('historial');
-            const row = tbody.insertRow(0);
-            row.style.background = "#f0f9ff";
+        function showTab(tabName) {
+            document.getElementById('tab-dashboard').classList.add('hidden');
+            document.getElementById('tab-usuarios').classList.add('hidden');
             
-            row.innerHTML = `
-                <td>${val}</td>
-                <td>...</td>
-                <td>Consultando...</td>
-                <td>${new Date().toLocaleDateString()}</td>
-                <td><span class="badge" style="background:#e2e8f0">Procesando</span></td>
-            `;
-
-            setTimeout(() => {
-                creditosRestantes--;
-                document.getElementById('creditos').innerText = creditosRestantes;
-                row.style.background = "transparent";
-                row.innerHTML = `
-                    <td>${val}</td>
-                    <td>${Math.floor(Math.random() * 1000)}</td>
-                    <td><span class="badge badge-success">Vigente</span></td>
-                    <td>${new Date().toLocaleDateString()}</td>
-                    <td>Completado</td>
-                `;
-            }, 2000);
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+            
+            // Update active nav
+            const items = document.querySelectorAll('.nav-item');
+            items.forEach(i => i.classList.remove('active'));
+            event.currentTarget.classList.add('active');
         }
+
+        // Gráfica de simulación
+        const ctx = document.getElementById('myChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['RRHH', 'Finanzas', 'Auditoría', 'Sistemas'],
+                datasets: [{
+                    label: 'Consultas Realizadas',
+                    data: [450, 210, 890, 120],
+                    backgroundColor: '#3b82f6'
+                }]
+            },
+            options: { responsive: true, scales: { y: { beginAtZero: true } } }
+        });
     </script>
 </body>
 </html>
