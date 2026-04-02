@@ -3,76 +3,76 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SynkData | Enterprise Access</title>
+<title>SynkData | Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
-:root {
-  --primary:#2563eb;
-  --dark:#0f172a;
-  --bg:#f8fafc;
+:root{
+  --bg:#f1f5f9;
+  --sidebar:#ffffff;
+  --primary:#10b981;
+  --text:#0f172a;
 }
 
-body {
-  font-family:'Inter',sans-serif;
-  background:var(--bg);
-  margin:0;
-}
-
-.hidden {display:none!important;}
+body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text)}
+.hidden{display:none}
 
 /* LOGIN */
 #login-page{
   height:100vh;display:flex;align-items:center;justify-content:center;
-  background:radial-gradient(circle at top right,#1e293b,#0f172a);
+  background:linear-gradient(135deg,#0f172a,#1e293b);
 }
-
 .login-card{
-  background:white;padding:2rem;border-radius:14px;width:100%;max-width:360px;text-align:center;
-  box-shadow:0 20px 40px rgba(0,0,0,.3);
+  background:white;padding:2rem;border-radius:16px;width:320px;text-align:center;
 }
-
 .login-card input{
-  width:100%;padding:10px;margin-top:10px;border-radius:8px;border:1px solid #e2e8f0;
+  width:100%;padding:10px;margin-top:10px;border-radius:8px;border:1px solid #ddd;
 }
-
 .btn-login{
-  width:100%;padding:12px;margin-top:15px;background:var(--primary);
-  color:white;border:none;border-radius:8px;cursor:pointer;
+  width:100%;padding:12px;margin-top:15px;background:var(--primary);color:white;border:none;border-radius:8px;
 }
 
-/* DASHBOARD */
+/* LAYOUT */
 #main-dashboard{display:flex}
 
 .sidebar{
-  width:240px;background:var(--dark);color:white;height:100vh;position:fixed;padding:20px;
+  width:250px;background:var(--sidebar);height:100vh;padding:20px;border-right:1px solid #e2e8f0;
 }
 
-.main-content{
-  margin-left:240px;padding:2rem;width:100%;
-}
+.logo{font-weight:700;font-size:20px;margin-bottom:20px}
+.logo span{color:var(--primary)}
 
 .nav-item{
-  padding:10px;border-radius:6px;margin-bottom:5px;color:#94a3b8;cursor:pointer;
+  padding:10px;border-radius:8px;margin-bottom:5px;color:#64748b;cursor:pointer;
+}
+.nav-item.active{background:#e2e8f0;color:black}
+.nav-item:hover{background:#e2e8f0}
+
+.user-box{
+  position:absolute;bottom:20px;width:210px;background:#f8fafc;padding:10px;border-radius:10px;
 }
 
-.nav-item:hover{
-  background:#1e293b;color:white;transform:translateX(4px);
+.main{
+  flex:1;padding:2rem;
 }
 
-.nav-item.active{
-  background:#1e293b;color:white;border-left:4px solid var(--primary);
+.cards{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;
 }
-
 .card{
-  background:white;padding:1.5rem;border-radius:10px;
-  box-shadow:0 1px 3px rgba(0,0,0,0.1);
+  background:white;padding:1rem;border-radius:14px;box-shadow:0 2px 6px rgba(0,0,0,.05);
+}
+.card h4{margin:0;font-size:.8rem;color:#64748b}
+.card p{margin:5px 0 0;font-size:1.5rem;font-weight:600}
+
+.panel{
+  background:white;padding:1.5rem;border-radius:16px;margin-bottom:1rem;
+}
+.center{
+  text-align:center;color:#94a3b8;margin-top:30px
 }
 
-.grid-3{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem;
-}
 </style>
 </head>
 
@@ -81,17 +81,11 @@ body {
 <!-- LOGIN -->
 <div id="login-page">
   <div class="login-card">
-    <h2>SynkData Cloud</h2>
-    <p style="font-size:.8rem;color:#64748b">Demo Access</p>
-
+    <h2>SynkData</h2>
     <input id="user" placeholder="Usuario">
     <input id="pass" type="password" placeholder="Contraseña">
-
     <button class="btn-login" onclick="login()">Ingresar</button>
-
-    <p style="font-size:.7rem;margin-top:10px;color:#94a3b8">
-      Demo: admin / 1234
-    </p>
+    <p style="font-size:.7rem;margin-top:10px">admin / 1234</p>
   </div>
 </div>
 
@@ -99,41 +93,51 @@ body {
 <div id="main-dashboard" class="hidden">
 
 <div class="sidebar">
-  <h3>SynkData</h3>
+  <div class="logo">Gestor<span>RH</span></div>
 
-  <div class="nav-item active" onclick="switchTab(event,'dashboard')">Resumen</div>
-  <div class="nav-item" onclick="switchTab(event,'users')">Usuarios</div>
-  <div class="nav-item" onclick="switchTab(event,'queries')">Consultas</div>
+  <div class="nav-item active" onclick="switchTab(event,'dashboard')">Dashboard</div>
+  <div class="nav-item" onclick="switchTab(event,'queries')">Solicitudes</div>
+  <div class="nav-item" onclick="switchTab(event,'users')">Asesores</div>
 
-  <div style="margin-top:200px">
-    <div class="nav-item" onclick="logout()">Cerrar sesión</div>
+  <div class="user-box">
+    <b id="username">admin</b><br>
+    <small>Administrador</small>
+    <button onclick="logout()" style="width:100%;margin-top:8px">Cerrar sesión</button>
   </div>
 </div>
 
-<div class="main-content">
+<div class="main">
 
 <div id="tab-dashboard">
 <h2>Dashboard</h2>
 
-<div class="grid-3">
-<div class="card">Créditos: <b id="credits">1000</b></div>
-<div class="card">Costo API: $1500</div>
-<div class="card">Tiempo: 1.2s</div>
+<div class="cards">
+  <div class="card"><h4>ASESORES</h4><p>10</p></div>
+  <div class="card"><h4>SOLICITUDES</h4><p>0</p></div>
+  <div class="card"><h4>RECARGAS</h4><p>0</p></div>
+  <div class="card"><h4>COMPLETADOS</h4><p>22</p></div>
 </div>
 
-<canvas id="chart"></canvas>
+<div class="panel">
+  <h4>Solicitudes pendientes</h4>
+  <div class="center">Sin solicitudes</div>
 </div>
 
-<div id="tab-users" class="hidden">
-<h2>Usuarios</h2>
-<div class="card">Lista demo...</div>
+<div class="panel">
+  <h4>Recargas pendientes</h4>
+  <div class="center">Sin recargas</div>
+</div>
+
 </div>
 
 <div id="tab-queries" class="hidden">
-<h2>Nueva Consulta</h2>
-<div class="card">
-  <button onclick="useCredit()">Consumir crédito</button>
+  <h2>Solicitudes</h2>
+  <div class="panel">Módulo de consultas</div>
 </div>
+
+<div id="tab-users" class="hidden">
+  <h2>Asesores</h2>
+  <div class="panel">Lista de usuarios</div>
 </div>
 
 </div>
@@ -141,69 +145,29 @@ body {
 
 <script>
 
-// LOGIN DEMO
-const USERS = [
-  {user:"admin",pass:"1234",credits:1000},
-  {user:"demo",pass:"demo",credits:500}
-];
-
-let currentUser = null;
-let chart;
+const USERS=[{user:'admin',pass:'1234'}];
 
 function login(){
-  const u = user.value;
-  const p = pass.value;
+  const u=user.value;
+  const p=pass.value;
 
-  const found = USERS.find(x=>x.user===u && x.pass===p);
+  const ok=USERS.find(x=>x.user===u && x.pass===p);
 
-  if(found){
-    currentUser = found;
-    document.getElementById('login-page').classList.add('hidden');
-    document.getElementById('main-dashboard').classList.remove('hidden');
-
-    credits.innerText = found.credits;
-    initChart();
-  }else{
-    alert('Credenciales incorrectas');
-  }
+  if(ok){
+    login-page.classList.add('hidden');
+    main-dashboard.classList.remove('hidden');
+    username.innerText=u;
+  }else alert('Error');
 }
 
-function logout(){
-  location.reload();
-}
+function logout(){location.reload()}
 
-// TABS
 function switchTab(e,name){
   document.querySelectorAll('[id^="tab-"]').forEach(t=>t.classList.add('hidden'));
   document.getElementById('tab-'+name).classList.remove('hidden');
 
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   e.currentTarget.classList.add('active');
-}
-
-// CHART
-function initChart(){
-  const ctx = document.getElementById('chart');
-
-  if(chart) chart.destroy();
-
-  chart = new Chart(ctx,{
-    type:'bar',
-    data:{
-      labels:['Ene','Feb','Mar'],
-      datasets:[{label:'Consultas',data:[10,20,30]}]
-    }
-  });
-}
-
-// CRÉDITOS
-function useCredit(){
-  if(currentUser.credits>0){
-    currentUser.credits--;
-    credits.innerText = currentUser.credits;
-  }else{
-    alert('Sin créditos');
-  }
 }
 
 </script>
