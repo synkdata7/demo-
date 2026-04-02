@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SynkData | Dashboard</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
@@ -16,62 +15,105 @@
 }
 
 body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text)}
-.hidden{display:none}
 
 /* LOGIN */
 #login-page{
-  height:100vh;display:flex;align-items:center;justify-content:center;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   background:linear-gradient(135deg,#0f172a,#1e293b);
 }
+
 .login-card{
-  background:white;padding:2rem;border-radius:16px;width:320px;text-align:center;
-}
-.login-card input{
-  width:100%;padding:10px;margin-top:10px;border-radius:8px;border:1px solid #ddd;
-}
-.btn-login{
-  width:100%;padding:12px;margin-top:15px;background:var(--primary);color:white;border:none;border-radius:8px;
+  background:white;
+  padding:2rem;
+  border-radius:16px;
+  width:320px;
+  text-align:center;
+  box-shadow:0 20px 40px rgba(0,0,0,.3);
 }
 
-/* LAYOUT */
-#main-dashboard{display:flex}
+.login-card input{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border-radius:8px;
+  border:1px solid #ddd;
+}
+
+.btn-login{
+  width:100%;
+  padding:12px;
+  margin-top:15px;
+  background:var(--primary);
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+/* DASHBOARD */
+#main-dashboard{display:none}
 
 .sidebar{
-  width:250px;background:var(--sidebar);height:100vh;padding:20px;border-right:1px solid #e2e8f0;
+  width:250px;
+  background:white;
+  height:100vh;
+  padding:20px;
+  border-right:1px solid #e2e8f0;
+  position:fixed;
+}
+
+.main{
+  margin-left:250px;
+  padding:2rem;
 }
 
 .logo{font-weight:700;font-size:20px;margin-bottom:20px}
 .logo span{color:var(--primary)}
 
 .nav-item{
-  padding:10px;border-radius:8px;margin-bottom:5px;color:#64748b;cursor:pointer;
+  padding:10px;
+  border-radius:8px;
+  margin-bottom:5px;
+  color:#64748b;
+  cursor:pointer;
 }
 .nav-item.active{background:#e2e8f0;color:black}
 .nav-item:hover{background:#e2e8f0}
 
 .user-box{
-  position:absolute;bottom:20px;width:210px;background:#f8fafc;padding:10px;border-radius:10px;
-}
-
-.main{
-  flex:1;padding:2rem;
+  position:absolute;
+  bottom:20px;
+  width:210px;
+  background:#f8fafc;
+  padding:10px;
+  border-radius:10px;
 }
 
 .cards{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:1rem;
+  margin-bottom:1.5rem;
 }
+
 .card{
-  background:white;padding:1rem;border-radius:14px;box-shadow:0 2px 6px rgba(0,0,0,.05);
+  background:white;
+  padding:1rem;
+  border-radius:14px;
+  box-shadow:0 2px 6px rgba(0,0,0,.05);
 }
-.card h4{margin:0;font-size:.8rem;color:#64748b}
-.card p{margin:5px 0 0;font-size:1.5rem;font-weight:600}
 
 .panel{
-  background:white;padding:1.5rem;border-radius:16px;margin-bottom:1rem;
+  background:white;
+  padding:1.5rem;
+  border-radius:16px;
+  margin-bottom:1rem;
 }
-.center{
-  text-align:center;color:#94a3b8;margin-top:30px
-}
+
+.hidden{display:none}
 
 </style>
 </head>
@@ -90,7 +132,7 @@ body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--te
 </div>
 
 <!-- DASHBOARD -->
-<div id="main-dashboard" class="hidden">
+<div id="main-dashboard">
 
 <div class="sidebar">
   <div class="logo">Gestor<span>RH</span></div>
@@ -118,26 +160,17 @@ body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--te
   <div class="card"><h4>COMPLETADOS</h4><p>22</p></div>
 </div>
 
-<div class="panel">
-  <h4>Solicitudes pendientes</h4>
-  <div class="center">Sin solicitudes</div>
-</div>
-
-<div class="panel">
-  <h4>Recargas pendientes</h4>
-  <div class="center">Sin recargas</div>
-</div>
+<div class="panel">Solicitudes pendientes</div>
+<div class="panel">Recargas pendientes</div>
 
 </div>
 
 <div id="tab-queries" class="hidden">
   <h2>Solicitudes</h2>
-  <div class="panel">Módulo de consultas</div>
 </div>
 
 <div id="tab-users" class="hidden">
   <h2>Asesores</h2>
-  <div class="panel">Lista de usuarios</div>
 </div>
 
 </div>
@@ -148,16 +181,18 @@ body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--te
 const USERS=[{user:'admin',pass:'1234'}];
 
 function login(){
-  const u=user.value;
-  const p=pass.value;
+  const u=document.getElementById('user').value.trim();
+  const p=document.getElementById('pass').value.trim();
 
   const ok=USERS.find(x=>x.user===u && x.pass===p);
 
   if(ok){
-    login-page.classList.add('hidden');
-    main-dashboard.classList.remove('hidden');
-    username.innerText=u;
-  }else alert('Error');
+    document.getElementById('login-page').style.display='none';
+    document.getElementById('main-dashboard').style.display='block';
+    document.getElementById('username').innerText=u;
+  }else{
+    alert('Credenciales incorrectas');
+  }
 }
 
 function logout(){location.reload()}
