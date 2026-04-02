@@ -3,99 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SynkData | Panel de Consultas v1.0</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <title>SynkData | Cloud Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 450px; text-align: center; }
-        h1 { color: #1a202c; margin-bottom: 0.5rem; font-size: 1.5rem; }
-        p { color: #718096; margin-bottom: 1.5rem; font-size: 0.9rem; }
-        input { width: 100%; padding: 12px; margin-bottom: 1rem; border: 1px solid #e2e8f0; border-radius: 6px; box-sizing: border-box; outline: none; }
-        input:focus { border-color: #3182ce; }
-        button { width: 100%; padding: 12px; background: #3182ce; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
-        button:hover { background: #2b6cb0; }
-        .hidden { display: none; }
-        #results-box { margin-top: 1.5rem; text-align: left; background: #edf2f7; padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.85rem; color: #2d3748; }
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #3182ce; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; margin-right: 10px; vertical-align: middle; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        :root { --primary: #2563eb; --success: #10b981; --bg: #f8fafc; --text: #1e293b; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; }
+        .hidden { display: none !important; }
+        
+        /* Login Glassmorphism */
+        #login-page { height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        .login-card { background: white; padding: 2.5rem; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); }
+        
+        /* Main Layout */
+        .sidebar { width: 260px; height: 100vh; background: #0f172a; color: white; position: fixed; padding: 1.5rem; }
+        .main-content { margin-left: 280px; padding: 2rem; }
+        
+        /* Cards */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid var(--primary); }
+        .stat-card h3 { margin: 0; font-size: 0.8rem; color: #64748b; text-transform: uppercase; }
+        .stat-card p { margin: 0.5rem 0 0; font-size: 1.5rem; font-weight: 600; }
+
+        /* Tables */
+        .table-container { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th { text-align: left; padding: 0.75rem; border-bottom: 1px solid #e2e8f0; color: #64748b; font-size: 0.85rem; }
+        td { padding: 0.75rem; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+        .badge { padding: 4px 8px; border-radius: 99px; font-size: 0.75rem; font-weight: 600; }
+        .badge-success { background: #dcfce7; color: #166534; }
+
+        /* Inputs */
+        .search-box { display: flex; gap: 10px; margin-bottom: 2rem; background: white; padding: 1rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        input { padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; flex-grow: 1; outline: none; }
+        button { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; }
     </style>
 </head>
 <body>
 
-    <div id="login-section" class="card">
-        <h1>SynkData Cloud</h1>
-        <p>Ingresa tus credenciales para acceder al panel de semanas cotizadas.</p>
-        <input type="text" id="user" placeholder="Usuario de cliente">
-        <input type="password" id="pass" placeholder="Contraseña">
-        <button onclick="handleLogin()">Iniciar Sesión</button>
-        <div style="margin-top: 1rem; font-size: 0.7rem; color: #cbd5e0;">Acceso restringido por IP</div>
+    <div id="login-page">
+        <div class="login-card">
+            <h2 style="margin-top:0">SynkData Cloud</h2>
+            <p>Portal de Consultas Masivas</p>
+            <input type="text" id="user" placeholder="Usuario de Cliente">
+            <input type="password" id="pass" placeholder="Contraseña">
+            <button style="width:100%" onclick="login()">Acceder al Dashboard</button>
+        </div>
     </div>
 
-    <div id="dashboard-section" class="card hidden">
-        <h1>Panel de Consultas</h1>
-        <p>Módulo de Semanas Cotizadas (NSS / CURP)</p>
-        <input type="text" id="query-input" placeholder="Ej: 01128456789">
-        <button id="btn-query" onclick="simulateQuery()">Consultar Datos</button>
-        
-        <div id="loading" class="hidden" style="margin-top: 1rem;">
-            <div class="loader"></div> <span style="font-size: 0.9rem; color: #4a5568;">Conectando con API Nufi...</span>
+    <div id="dashboard-page" class="hidden">
+        <div class="sidebar">
+            <h2>SynkData</h2>
+            <nav style="margin-top: 2rem;">
+                <p style="color: #64748b; font-size: 0.8rem;">MENU</p>
+                <div style="padding: 10px 0; color: #3b82f6; cursor: pointer;">📊 Dashboard</div>
+                <div style="padding: 10px 0; color: #94a3b8; cursor: pointer;">🔍 Consultas</div>
+                <div style="padding: 10px 0; color: #94a3b8; cursor: pointer;">📑 Reportes</div>
+                <div style="padding: 10px 0; color: #94a3b8; cursor: pointer; margin-top: 20rem;" onclick="location.reload()">🚪 Cerrar Sesión</div>
+            </nav>
         </div>
 
-        <div id="results-box" class="hidden">
-            <strong>JSON Response:</strong>
-            <pre id="json-output"></pre>
+        <div class="main-content">
+            <h1>Panel de Control</h1>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Créditos Disponibles</h3>
+                    <p id="creditos">1,000</p>
+                </div>
+                <div class="stat-card" style="border-left-color: var(--success);">
+                    <h3>Consultas Exitosas</h3>
+                    <p>842</p>
+                </div>
+                <div class="stat-card" style="border-left-color: #f59e0b;">
+                    <h3>Tiempo Promedio API</h3>
+                    <p>1.8s</p>
+                </div>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="query-val" placeholder="Ingresa NSS o CURP para consulta en tiempo real...">
+                <button onclick="ejecutarConsulta()">Ejecutar Query</button>
+            </div>
+
+            <div class="table-container">
+                <h3>Últimas Consultas (Nufi Interface)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Identificador</th>
+                            <th>Semanas</th>
+                            <th>Estatus IMSS</th>
+                            <th>Fecha</th>
+                            <th>Resultado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historial">
+                        <tr>
+                            <td>011284XXXXX</td>
+                            <td>952</td>
+                            <td><span class="badge badge-success">Vigente</span></td>
+                            <td>02/04/2026</td>
+                            <td>Completado</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        
-        <button onclick="location.reload()" style="background: transparent; color: #a0aec0; margin-top: 1rem; font-size: 0.8rem;">Cerrar Sesión</button>
     </div>
 
     <script>
-        function handleLogin() {
-            const user = document.getElementById('user').value;
-            const pass = document.getElementById('pass').value;
+        let creditosRestantes = 1000;
 
-            // Credenciales para que ellos prueben (puedes cambiarlas)
-            if(user === "admin" && pass === "synk2026") {
-                document.getElementById('login-section').classList.add('hidden');
-                document.getElementById('dashboard-section').classList.remove('hidden');
+        function login() {
+            const u = document.getElementById('user').value;
+            const p = document.getElementById('pass').value;
+            if(u === "admin" && p === "synk2026") {
+                document.getElementById('login-page').classList.add('hidden');
+                document.getElementById('dashboard-page').classList.remove('hidden');
             } else {
-                alert("Credenciales inválidas para este demo.");
+                alert("Acceso denegado");
             }
         }
 
-        function simulateQuery() {
-            const val = document.getElementById('query-input').value;
-            if(!val) return alert("Por favor ingresa un NSS o CURP");
+        function ejecutarConsulta() {
+            const val = document.getElementById('query-val').value;
+            if(!val) return alert("Ingresa un dato");
 
-            const btn = document.getElementById('btn-query');
-            const loader = document.getElementById('loading');
-            const results = document.getElementById('results-box');
-            const output = document.getElementById('json-output');
+            // Simulación de costo y respuesta
+            if(creditosRestantes <= 0) return alert("Créditos insuficientes. Contacta a SynkData para recarga.");
 
-            btn.disabled = true;
-            loader.classList.remove('hidden');
-            results.classList.add('hidden');
+            const tbody = document.getElementById('historial');
+            const row = tbody.insertRow(0);
+            row.style.background = "#f0f9ff";
+            
+            row.innerHTML = `
+                <td>${val}</td>
+                <td>...</td>
+                <td>Consultando...</td>
+                <td>${new Date().toLocaleDateString()}</td>
+                <td><span class="badge" style="background:#e2e8f0">Procesando</span></td>
+            `;
 
-            // Simulamos el delay de la API real de Nufi
             setTimeout(() => {
-                btn.disabled = false;
-                loader.classList.add('hidden');
-                results.classList.remove('hidden');
-
-                const fakeData = {
-                    status: "success",
-                    data: {
-                        nss: val,
-                        semanas_cotizadas: Math.floor(Math.random() * (1200 - 500 + 1)) + 500,
-                        ultimo_patron: "EMPRESA DE LOGISTICA S.A. DE C.V.",
-                        vigencia: "VIGENTE",
-                        timestamp: new Date().toLocaleString()
-                    },
-                    source: "Nufi-Enrichment-API"
-                };
-
-                output.textContent = JSON.stringify(fakeData, null, 2);
-            }, 2500);
+                creditosRestantes--;
+                document.getElementById('creditos').innerText = creditosRestantes;
+                row.style.background = "transparent";
+                row.innerHTML = `
+                    <td>${val}</td>
+                    <td>${Math.floor(Math.random() * 1000)}</td>
+                    <td><span class="badge badge-success">Vigente</span></td>
+                    <td>${new Date().toLocaleDateString()}</td>
+                    <td>Completado</td>
+                `;
+            }, 2000);
         }
     </script>
 </body>
